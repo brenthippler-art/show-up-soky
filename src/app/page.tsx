@@ -1,6 +1,7 @@
 import Link from "next/link";
 import EventCard from "@/components/EventCard";
 import { getUpcomingEvents } from "@/lib/events";
+import SignupForm from "@/components/SignupForm";
 
 export default async function HomePage() {
   let events;
@@ -69,6 +70,21 @@ export default async function HomePage() {
             events.map((event) => <EventCard key={event.id} event={event} />)
           )}
         </div>
+        <section
+          aria-labelledby="signup-heading"
+          className="mt-16 rounded-3xl bg-sunshine p-8 shadow-md sm:p-10"
+        >
+          <h2 id="signup-heading" className="text-3xl font-extrabold">
+            Never miss a chance to show up.
+          </h2>
+          <p className="mt-2 max-w-xl text-lg">
+            One email every Monday with the week’s events. No spam, unsubscribe
+            anytime.
+          </p>
+          <div className="mt-6">
+            <SignupForm />
+          </div>
+        </section>
       </main>
     </>
   );
