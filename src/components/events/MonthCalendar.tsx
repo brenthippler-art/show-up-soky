@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { addMonths, labelForKey, monthGrid, monthLabel } from '@/lib/dates'
-import { homeHref } from './links'
+import type { HrefFn } from './links'
 
 const WEEKDAYS = [
   { short: 'S', full: 'Sunday' },
@@ -18,9 +18,10 @@ type Props = {
   selectedKey: string | null
   counts: Record<string, number>
   keepParams: { date?: string; view?: 'week' }
+  href: HrefFn
 }
 
-export default function MonthCalendar({ month, today, selectedKey, counts, keepParams }: Props) {
+export default function MonthCalendar({ month, today, selectedKey, counts, keepParams, href }: Props) {
   const weeks = monthGrid(month)
   const prev = addMonths(month, -1)
   const next = addMonths(month, 1)
@@ -32,7 +33,7 @@ export default function MonthCalendar({ month, today, selectedKey, counts, keepP
     <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-ink/5">
       <div className="flex items-center justify-between">
         {canGoBack ? (
-          <Link href={homeHref({ ...keepParams, month: prev })} className={navClass} scroll={false}>
+          <Link href={href({ ...keepParams, month: prev })} className={navClass} scroll={false}>
             <span aria-hidden="true">←</span>
             <span className="sr-only">Previous month, {monthLabel(prev)}</span>
           </Link>
@@ -42,7 +43,7 @@ export default function MonthCalendar({ month, today, selectedKey, counts, keepP
 
         <p className="font-display text-lg font-extrabold">{monthLabel(month)}</p>
 
-        <Link href={homeHref({ ...keepParams, month: next })} className={navClass} scroll={false}>
+        <Link href={href({ ...keepParams, month: next })} className={navClass} scroll={false}>
           <span aria-hidden="true">→</span>
           <span className="sr-only">Next month, {monthLabel(next)}</span>
         </Link>
@@ -69,6 +70,7 @@ export default function MonthCalendar({ month, today, selectedKey, counts, keepP
                       today={today}
                       selected={key === selectedKey}
                       count={counts[key] ?? 0}
+                      href={href}
                     />
                   )}
                 </td>
@@ -86,11 +88,13 @@ function DayCell({
   today,
   selected,
   count,
+  href,
 }: {
   dayKey: string
   today: string
   selected: boolean
   count: number
+  href: HrefFn
 }) {
   const dayNumber = Number(dayKey.slice(8))
 
@@ -105,7 +109,7 @@ function DayCell({
 
   return (
     <Link
-      href={homeHref({ date: dayKey })}
+      href={href({ date: dayKey })}
       aria-label={label}
       aria-current={selected ? 'date' : undefined}
       className={`relative block rounded-lg py-1.5 text-sm font-bold ${

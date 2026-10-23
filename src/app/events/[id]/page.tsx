@@ -1,36 +1,41 @@
-import type { Metadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
-import OrgAvatar from '@/components/OrgAvatar'
-import ShareButtons from '@/components/ShareButtons'
-import { getEvent } from '@/lib/events'
-import { formatEventTime } from '@/lib/format'
-import { isUuid } from '@/lib/url'
-import type { EventType } from '@/types/event'
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import OrgAvatar from "@/components/OrgAvatar";
+import ShareButtons from "@/components/ShareButtons";
+import { getEvent } from "@/lib/events";
+import { formatEventTime } from "@/lib/format";
+import { isUuid } from "@/lib/url";
+import type { EventType } from "@/types/event";
+import AddToCalendar from "@/components/AddToCalendar";
 
-type Params = Promise<{ id: string }>
+type Params = Promise<{ id: string }>;
 
 const typeLabels: Record<EventType, { label: string; pill: string }> = {
-  rally: { label: 'Rally', pill: 'bg-berry-light' },
-  meeting: { label: 'Meeting', pill: 'bg-sky-light' },
-  volunteer: { label: 'Volunteer', pill: 'bg-meadow-light' },
-  town_hall: { label: 'Town Hall', pill: 'bg-tangerine-light' },
-  training: { label: 'Training', pill: 'bg-sunshine-light' },
-  social: { label: 'Social', pill: 'bg-berry-light' },
-  other: { label: 'Event', pill: 'bg-sky-light' },
-}
+  rally: { label: "Rally", pill: "bg-berry-light" },
+  meeting: { label: "Meeting", pill: "bg-sky-light" },
+  volunteer: { label: "Volunteer", pill: "bg-meadow-light" },
+  town_hall: { label: "Town Hall", pill: "bg-tangerine-light" },
+  training: { label: "Training", pill: "bg-sunshine-light" },
+  social: { label: "Social", pill: "bg-berry-light" },
+  other: { label: "Event", pill: "bg-sky-light" },
+};
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { id } = await params
-  if (!isUuid(id)) return { title: 'Event not found | Show Up SOKY' }
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { id } = await params;
+  if (!isUuid(id)) return { title: "Event not found | Show Up SOKY" };
 
-  const event = await getEvent(id)
-  if (!event) return { title: 'Event not found | Show Up SOKY' }
+  const event = await getEvent(id);
+  if (!event) return { title: "Event not found | Show Up SOKY" };
 
-  const when = formatEventTime(event.starts_at, event.ends_at)
-  const description = `${when}${event.location_name ? ` · ${event.location_name}` : ''}`
+  const when = formatEventTime(event.starts_at, event.ends_at);
+  const description = `${when}${event.location_name ? ` · ${event.location_name}` : ""}`;
 
   return {
     title: `${event.title} | Show Up SOKY`,
@@ -39,70 +44,95 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       title: event.title,
       description,
       url: `/events/${event.id}`,
-      type: 'website',
-      images: event.image_url ? [{ url: event.image_url, alt: `Flyer for ${event.title}` }] : undefined,
+      type: "website",
+      images: event.image_url
+        ? [{ url: event.image_url, alt: `Flyer for ${event.title}` }]
+        : undefined,
     },
     twitter: {
-      card: event.image_url ? 'summary_large_image' : 'summary',
+      card: event.image_url ? "summary_large_image" : "summary",
     },
-  }
+  };
 }
 
 function directionsUrl(location: string | null, address: string | null) {
-  const query = address ?? (location ? `${location}, Kentucky` : null)
-  if (!query) return null
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+  const query = address ?? (location ? `${location}, Kentucky` : null);
+  if (!query) return null;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 async function EventContent({ params }: { params: Params }) {
-  const { id } = await params
-  if (!isUuid(id)) notFound()
+  const { id } = await params;
+  if (!isUuid(id)) notFound();
 
-  const event = await getEvent(id)
-  if (!event) notFound()
+  const event = await getEvent(id);
+  if (!event) notFound();
 
-  const type = typeLabels[event.event_type]
-  const isPast = new Date(event.ends_at ?? event.starts_at) < new Date()
-  const directions = event.is_online ? null : directionsUrl(event.location_name, event.address)
-  const shareUrl = `${process.env.SITE_URL}/events/${event.id}`
+  const type = typeLabels[event.event_type];
+  const isPast = new Date(event.ends_at ?? event.starts_at) < new Date();
+  const directions = event.is_online
+    ? null
+    : directionsUrl(event.location_name, event.address);
+  const shareUrl = `${process.env.SITE_URL}/events/${event.id}`;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
-      <Link href="/" className="font-bold text-ink-soft underline underline-offset-4">
+      <Link
+        href="/events"
+        className="font-bold text-ink-soft underline underline-offset-4"
+      >
         ← All events
       </Link>
 
       {isPast && (
         <p className="mt-6 rounded-xl bg-tangerine-light p-4 font-bold">
-          This event has already happened.{' '}
-          <Link href="/" className="underline underline-offset-4">See what’s coming up</Link>
+          This event has already happened.{" "}
+          <Link href="/events" className="underline underline-offset-4">
+            See what’s coming up
+          </Link>
         </p>
       )}
 
       <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_320px]">
         <article>
           <div className="flex flex-wrap gap-2">
-            <span className={`rounded-full px-3 py-1 text-sm font-bold ${type.pill}`}>{type.label}</span>
+            <span
+              className={`rounded-full px-3 py-1 text-sm font-bold ${type.pill}`}
+            >
+              {type.label}
+            </span>
             {event.is_free && (
-              <span className="rounded-full bg-meadow-light px-3 py-1 text-sm font-bold">Free</span>
+              <span className="rounded-full bg-meadow-light px-3 py-1 text-sm font-bold">
+                Free
+              </span>
             )}
             {event.is_online && (
-              <span className="rounded-full bg-sky-light px-3 py-1 text-sm font-bold">Online</span>
+              <span className="rounded-full bg-sky-light px-3 py-1 text-sm font-bold">
+                Online
+              </span>
             )}
           </div>
 
-          <h1 className="mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">{event.title}</h1>
+          <h1 className="mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">
+            {event.title}
+          </h1>
 
           <dl className="mt-6 space-y-4 text-lg">
             <div>
-              <dt className="text-sm font-bold uppercase tracking-wide text-ink-soft">When</dt>
+              <dt className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+                When
+              </dt>
               <dd className="font-bold">
-                <time dateTime={event.starts_at}>{formatEventTime(event.starts_at, event.ends_at)}</time>
+                <time dateTime={event.starts_at}>
+                  {formatEventTime(event.starts_at, event.ends_at)}
+                </time>
               </dd>
             </div>
 
             <div>
-              <dt className="text-sm font-bold uppercase tracking-wide text-ink-soft">Where</dt>
+              <dt className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+                Where
+              </dt>
               <dd>
                 {event.is_online ? (
                   event.online_url ? (
@@ -112,15 +142,20 @@ async function EventContent({ params }: { params: Params }) {
                       rel="noopener noreferrer"
                       className="font-bold underline decoration-sunshine-dark decoration-2 underline-offset-4"
                     >
-                      Join online<span className="sr-only"> (opens in a new tab)</span>
+                      Join online
+                      <span className="sr-only"> (opens in a new tab)</span>
                     </a>
                   ) : (
-                    'Online'
+                    "Online"
                   )
                 ) : (
                   <>
                     <span className="font-bold">{event.location_name} </span>
-                    {event.address && <span className="block text-ink-soft">{event.address}</span>}
+                    {event.address && (
+                      <span className="block text-ink-soft">
+                        {event.address}
+                      </span>
+                    )}
                     {directions && (
                       <a
                         href={directions}
@@ -128,7 +163,11 @@ async function EventContent({ params }: { params: Params }) {
                         rel="noopener noreferrer"
                         className="mt-1 inline-block text-base font-bold underline decoration-sunshine-dark decoration-2 underline-offset-4"
                       >
-                               | Get directions<span className="sr-only"> (opens Google Maps in a new tab)</span>
+                        | Get directions
+                        <span className="sr-only">
+                          {" "}
+                          (opens Google Maps in a new tab)
+                        </span>
                       </a>
                     )}
                   </>
@@ -137,6 +176,12 @@ async function EventContent({ params }: { params: Params }) {
             </div>
           </dl>
 
+          {!isPast && (
+            <div className="mt-8">
+              <AddToCalendar event={event} pageUrl={shareUrl} />
+            </div>
+          )}
+
           {event.rsvp_url && !isPast && (
             <a
               href={event.rsvp_url}
@@ -144,14 +189,20 @@ async function EventContent({ params }: { params: Params }) {
               rel="noopener noreferrer"
               className="mt-8 inline-block rounded-full bg-sunshine px-8 py-3 text-lg font-bold shadow-md hover:bg-sunshine-dark"
             >
-              RSVP<span className="sr-only"> for {event.title} (opens in a new tab)</span>
+              RSVP
+              <span className="sr-only">
+                {" "}
+                for {event.title} (opens in a new tab)
+              </span>
             </a>
           )}
 
           {event.description && (
             <div className="mt-8">
               <h2 className="text-2xl font-extrabold">About this event</h2>
-              <p className="mt-3 whitespace-pre-line text-lg leading-relaxed">{event.description}</p>
+              <p className="mt-3 whitespace-pre-line text-lg leading-relaxed">
+                {event.description}
+              </p>
             </div>
           )}
 
@@ -186,13 +237,23 @@ async function EventContent({ params }: { params: Params }) {
 
           {event.organizations && (
             <div className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-ink/5">
-              <p className="text-sm font-bold uppercase tracking-wide text-ink-soft">Hosted by</p>
+              <p className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+                Hosted by
+              </p>
               <div className="mt-3 flex items-center gap-3">
-                <OrgAvatar name={event.organizations.name} logoUrl={event.organizations.logo_url} size="md" />
-                <p className="text-lg font-extrabold">{event.organizations.name}</p>
+                <OrgAvatar
+                  name={event.organizations.name}
+                  logoUrl={event.organizations.logo_url}
+                  size="md"
+                />
+                <p className="text-lg font-extrabold">
+                  {event.organizations.name}
+                </p>
               </div>
               {event.organizations.description && (
-                <p className="mt-3 line-clamp-4 text-ink-soft">{event.organizations.description}</p>
+                <p className="mt-3 line-clamp-4 text-ink-soft">
+                  {event.organizations.description}
+                </p>
               )}
               <Link
                 href={`/orgs/${event.organizations.slug}`}
@@ -205,7 +266,7 @@ async function EventContent({ params }: { params: Params }) {
         </aside>
       </div>
     </main>
-  )
+  );
 }
 
 export default function EventPage({ params }: { params: Params }) {
@@ -219,5 +280,5 @@ export default function EventPage({ params }: { params: Params }) {
     >
       <EventContent params={params} />
     </Suspense>
-  )
+  );
 }

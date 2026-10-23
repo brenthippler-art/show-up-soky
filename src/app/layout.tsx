@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Atkinson_Hyperlegible } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   title: 'Show Up SOKY',
   description:
     'Community events advancing rights and freedoms for every person in South Central Kentucky.',
+}
+
+export const viewport: Viewport = {
+  themeColor: '#ffd23f',
 }
 
 export default function RootLayout({

@@ -20,7 +20,7 @@ async function ConfirmContent({ searchParams }: { searchParams: Params }) {
         <p className="mt-3 text-lg text-ink-soft">
           Look for your first list of events next Monday morning.
         </p>
-        <Link href="/" className="mt-6 inline-block rounded-full bg-sunshine px-6 py-3 font-bold shadow-md hover:bg-sunshine-dark">
+        <Link href="/events" className="mt-6 inline-block rounded-full bg-sunshine px-6 py-3 font-bold shadow-md hover:bg-sunshine-dark">
           See upcoming events
         </Link>
       </>
@@ -35,7 +35,7 @@ async function ConfirmContent({ searchParams }: { searchParams: Params }) {
           It may have expired or already been used. You can sign up again from the homepage.
         </p>
         <Link href="/" className="mt-6 inline-block font-bold underline underline-offset-4">
-          Back to the homepage
+          Back to the home page
         </Link>
       </>
     )

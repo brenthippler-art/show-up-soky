@@ -57,7 +57,7 @@ function buildDigestHtml(events: DigestEvent[], unsubscribeUrl: string) {
           ${events.map(eventHtml).join('')}
         </table>
         <p style="margin: 28px 0 8px;">
-          <a href="${siteUrl}"
+          <a href="${siteUrl}/events"
              style="background: #1f2440; color: #fffbf0; padding: 12px 22px; border-radius: 999px;
                     text-decoration: none; font-weight: bold;">
             See the full calendar

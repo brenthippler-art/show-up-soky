@@ -1,177 +1,227 @@
-import { connection } from 'next/server'
-import { Suspense } from 'react'
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import SignupForm from '@/components/SignupForm'
-import EventsPanel from '@/components/home/EventsPanel'
-import MonthCalendar from '@/components/home/MonthCalendar'
-import QuickPicks, { type QuickSection } from '@/components/home/QuickPicks'
-import { homeHref, type Selection } from '@/components/home/links'
 import { getUpcomingEvents } from '@/lib/events'
-import { addDays, dayKey, isDayKey, isMonthKey, todayKey } from '@/lib/dates'
-import type { Event } from '@/types/event'
+import { formatDate } from '@/lib/format'
+import { EVENT_TYPE_STYLES } from '@/lib/event-types'
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>
-
-function one(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value
+export const metadata: Metadata = {
+  title: 'Show Up SOKY | Community events across South Central Kentucky',
+  description:
+    'One place to find rallies, meetings, trainings and volunteer days moving rights and freedoms forward in South Central Kentucky.',
 }
 
-function groupByDay(events: Event[]) {
-  const map = new Map<string, Event[]>()
-  for (const event of events) {
-    const key = dayKey(event.starts_at)
-    const list = map.get(key) ?? []
-    list.push(event)
-    map.set(key, list)
+const primaryButton =
+  'inline-block rounded-full bg-ink px-6 py-3 font-bold text-cream shadow-md hover:bg-ink-soft'
+const secondaryButton =
+  'inline-block rounded-full bg-white px-6 py-3 font-bold shadow-md ring-2 ring-ink hover:bg-sunshine-light'
+
+const STEPS = [
+  {
+    emoji: '📅',
+    title: 'Find something to show up for',
+    body: 'Browse the calendar by day or week, or filter for volunteer days, town halls, free events and more.',
+    href: '/events',
+    cta: 'See the calendar',
+    bg: 'bg-sky-light',
+  },
+  {
+    emoji: '🤝',
+    title: 'Meet the groups doing the work',
+    body: 'Learn what each local group is about, when they meet and how to get involved.',
+    href: '/orgs',
+    cta: 'Browse groups',
+    bg: 'bg-meadow-light',
+  },
+  {
+    emoji: '✉️',
+    title: 'Get the weekly list',
+    body: 'One email every Monday morning with the week’s events. No spam, unsubscribe anytime.',
+    href: '#signup',
+    cta: 'Sign up below',
+    bg: 'bg-tangerine-light',
+  },
+]
+
+async function ComingUp() {
+  let events
+  try {
+    events = (await getUpcomingEvents()).slice(0, 3)
+  } catch {
+    return null
   }
-  return map
-}
+  if (events.length === 0) return null
 
-function SignupBox() {
   return (
-    <section aria-labelledby="signup-heading" className="rounded-2xl bg-sunshine p-6 shadow-md">
-      <h2 id="signup-heading" className="text-2xl font-extrabold">Never miss a chance to show up.</h2>
-      <p className="mt-2">One email every Monday with the week’s events. Unsubscribe anytime.</p>
-      <div className="mt-4">
-        <SignupForm />
+    <section aria-labelledby="coming-up-heading" className="mx-auto max-w-6xl px-4 py-16">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h2 id="coming-up-heading" className="text-3xl font-extrabold sm:text-4xl">
+          Coming up
+        </h2>
+        <Link href="/events" className="font-bold underline decoration-sunshine-dark decoration-2 underline-offset-4">
+          See all events →
+        </Link>
       </div>
+
+      <ul className="mt-6 grid gap-6 md:grid-cols-3">
+        {events.map((event) => {
+          const style = EVENT_TYPE_STYLES[event.event_type]
+          return (
+            <li key={event.id}>
+              <Link
+                href={`/events/${event.id}`}
+                className="block h-full overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-ink/5 transition hover:-translate-y-0.5 hover:shadow-lg"
+              >
+                <div className={`h-2 ${style.bar}`} />
+                <div className="p-5">
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${style.pill}`}>
+                    {style.label}
+                  </span>
+                  <p className="mt-3 text-xl font-extrabold leading-snug">{event.title}</p>
+                  <p className="mt-2 text-sm font-bold text-ink-soft">{formatDate(event.starts_at)}</p>
+                  {event.organizations && (
+                    <p className="mt-1 text-sm text-ink-soft">{event.organizations.name}</p>
+                  )}
+                </div>
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
     </section>
   )
 }
 
-async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
-  await connection()
-  const params = await searchParams
+export default function HomePage() {
+  const contactEmail = process.env.CONTACT_EMAIL
 
-  let events: Event[]
-  try {
-    events = await getUpcomingEvents()
-  } catch (error) {
-    console.error(error)
-    return (
-      <p className="rounded-2xl bg-berry-light p-6 font-bold">
-        Couldn&apos;t load events right now. Please try again in a moment.
-      </p>
-    )
-  }
-
-  const today = todayKey()
-  const tomorrow = addDays(today, 1)
-  const weekKeys = Array.from({ length: 7 }, (_, i) => addDays(today, i))
-
-  const byDay = groupByDay(events)
-  const sortedDays = [...byDay.keys()].sort()
-  const counts = Object.fromEntries([...byDay].map(([key, list]) => [key, list.length]))
-
-  // Work out what the right-hand panel should show
-  const dateParam = one(params.date)
-  let selection: Selection
-
-  if (one(params.view) === 'week') {
-    selection = { kind: 'week' }
-  } else if (isDayKey(dateParam)) {
-    selection = { kind: 'day', key: dateParam }
-  } else {
-    const firstWithEvents = byDay.has(today) ? today : sortedDays.find((key) => key >= today)
-    selection = firstWithEvents && firstWithEvents !== today
-      ? { kind: 'day', key: firstWithEvents, fallbackFrom: today }
-      : { kind: 'day', key: today }
-  }
-
-  const selectedKey = selection.kind === 'day' ? selection.key : null
-  const explicitDate = selection.kind === 'day' && !selection.fallbackFrom ? selection.key : undefined
-
-  const monthParam = one(params.month)
-  const month = isMonthKey(monthParam) ? monthParam : (selectedKey ?? today).slice(0, 7)
-
-  const keepParams = selection.kind === 'week' ? { view: 'week' as const } : { date: explicitDate }
-
-  const sections: QuickSection[] = [
-    {
-      id: 'today',
-      label: 'Today',
-      href: homeHref({ date: today }),
-      active: selectedKey === today,
-      events: byDay.get(today) ?? [],
-    },
-    {
-      id: 'tomorrow',
-      label: 'Tomorrow',
-      href: homeHref({ date: tomorrow }),
-      active: selectedKey === tomorrow,
-      events: byDay.get(tomorrow) ?? [],
-    },
-    {
-      id: 'week',
-      label: 'This Week',
-      href: homeHref({ view: 'week' }),
-      active: selection.kind === 'week',
-      events: weekKeys.flatMap((key) => byDay.get(key) ?? []),
-    },
-  ]
-
-  const calendar = (
-    <MonthCalendar
-      month={month}
-      today={today}
-      selectedKey={selectedKey}
-      counts={counts}
-      keepParams={keepParams}
-    />
-  )
-
-  return (
-    <div className="grid gap-8 lg:grid-cols-3">
-      {/* Sidebar: quick picks + calendar */}
-      <aside aria-label="Choose dates" className="space-y-4 lg:col-start-1 lg:row-start-1">
-        <QuickPicks sections={sections} />
-
-        <details className="rounded-2xl bg-white shadow-sm ring-1 ring-ink/5 lg:hidden">
-          <summary className="cursor-pointer px-5 py-3 font-bold">Pick a date</summary>
-          <div className="px-2 pb-2">{calendar}</div>
-        </details>
-
-        <div className="hidden lg:block">{calendar}</div>
-      </aside>
-
-      {/* Main panel: the selected events */}
-      <div id="events" className="scroll-mt-6 lg:col-span-2 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <EventsPanel
-          selection={selection}
-          today={today}
-          byDay={byDay}
-          sortedDays={sortedDays}
-          weekKeys={weekKeys}
-        />
-      </div>
-
-      {/* Signup: under the sidebar on desktop, after the events on phones */}
-      <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
-        <SignupBox />
-      </div>
-    </div>
-  )
-}
-
-export default function HomePage({ searchParams }: { searchParams: SearchParams }) {
   return (
     <>
+      {/* Welcome */}
       <section className="bg-linear-to-br from-sunshine-light via-cream to-tangerine-light">
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-          <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
+          <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.05] sm:text-6xl">
             Show up for each other, <span className="bg-sunshine px-2">SOKY.</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-lg text-ink-soft">
-            Rallies, meetings, trainings and volunteer days moving rights and freedoms forward for
-            every person in South Central Kentucky, all in one place.
+          <p className="mt-6 max-w-2xl text-xl text-ink-soft">
+            Show Up SOKY brings together the rallies, meetings, trainings and volunteer days moving
+            rights and freedoms forward for every person in South Central Kentucky, all in one place.
           </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/events" className={primaryButton}>See upcoming events</Link>
+            <Link href="/orgs" className={secondaryButton}>Browse local groups</Link>
+          </div>
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl px-4 py-10">
-        <Suspense fallback={<p className="text-lg font-bold text-ink-soft">Loading events…</p>}>
-          <HomeContent searchParams={searchParams} />
-        </Suspense>
-      </main>
+      {/* Why */}
+      <section aria-labelledby="why-heading" className="mx-auto max-w-6xl px-4 py-16">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <h2 id="why-heading" className="text-3xl font-extrabold sm:text-4xl">
+              Good things are happening. They’re just hard to find.
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed">
+              Every local group has its own website, its own mailing list and its own calendar. So
+              great events slip by, and people who would have gladly shown up never hear about them.
+            </p>
+            <p className="mt-4 text-lg leading-relaxed">
+              Show Up SOKY is one shared calendar for all of it, so finding a way to get involved
+              takes a minute instead of an afternoon of searching.
+            </p>
+          </div>
+          <div className="rounded-3xl bg-sunshine p-8 shadow-md">
+            <p className="font-display text-2xl font-extrabold leading-snug">
+              Many groups. One calendar. Every neighbor welcome.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section aria-labelledby="how-heading" className="bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-16">
+          <h2 id="how-heading" className="text-3xl font-extrabold sm:text-4xl">How it works</h2>
+          <ol className="mt-8 grid gap-6 md:grid-cols-3">
+            {STEPS.map((step, i) => (
+              <li key={step.title} className={`flex flex-col rounded-2xl p-6 ${step.bg}`}>
+                <p className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+                  Step {i + 1}
+                </p>
+                <p className="mt-2 text-3xl" aria-hidden="true">{step.emoji}</p>
+                <h3 className="mt-2 text-xl font-extrabold">{step.title}</h3>
+                <p className="mt-2 flex-1 leading-relaxed">{step.body}</p>
+                <Link
+                  href={step.href}
+                  className="mt-4 font-bold underline decoration-ink decoration-2 underline-offset-4"
+                >
+                  {step.cta} →
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Coming up */}
+      <ComingUp />
+
+      {/* For organizers */}
+      <section aria-labelledby="organizers-heading" className="bg-sky-light">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 lg:grid-cols-2 lg:items-center">
+          <div>
+            <h2 id="organizers-heading" className="text-3xl font-extrabold sm:text-4xl">
+              Organizing something?
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed">
+              Listing your group and events is free. Every event gets its own page with directions,
+              add-to-calendar buttons and a share preview for Facebook and group texts, and it goes
+              out in the Monday email.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 lg:justify-end">
+            <Link href="/submit" className={primaryButton}>Submit an event</Link>
+            <Link href="/register" className={secondaryButton}>Register your group</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* How we review */}
+      <section aria-labelledby="review-heading" className="mx-auto max-w-3xl px-4 py-16">
+        <h2 id="review-heading" className="text-3xl font-extrabold">How listings are reviewed</h2>
+        <p className="mt-4 text-lg leading-relaxed">
+          Show Up SOKY is an independent community project based in Bowling Green. Events and groups
+          are submitted by the community, and every listing is reviewed by a person before it
+          appears on the site.
+        </p>
+        {contactEmail && (
+          <p className="mt-4 text-lg leading-relaxed">
+            Questions, corrections or ideas?{' '}
+            <a
+              href={`mailto:${contactEmail}`}
+              className="font-bold underline decoration-sunshine-dark decoration-2 underline-offset-4"
+            >
+              Get in touch
+            </a>
+            .
+          </p>
+        )}
+      </section>
+
+      {/* Signup */}
+      <section id="signup" aria-labelledby="home-signup-heading" className="scroll-mt-6 px-4 pb-8">
+        <div className="mx-auto max-w-3xl rounded-3xl bg-sunshine p-8 shadow-md sm:p-10">
+          <h2 id="home-signup-heading" className="text-3xl font-extrabold">
+            Never miss a chance to show up.
+          </h2>
+          <p className="mt-2 text-lg">
+            One email every Monday with the week’s events. Unsubscribe anytime.
+          </p>
+          <div className="mt-6">
+            <SignupForm idPrefix="home" />
+          </div>
+        </div>
+      </section>
     </>
   )
 }
