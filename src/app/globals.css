@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Connect next/font's variables to Tailwind font utilities */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bricolage);
+  --font-body: var(--font-atkinson);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Brand colors become Tailwind classes: bg-sunshine, text-ink, border-sky, etc. */
+@theme {
+  --color-sunshine: #ffd23f;
+  --color-sunshine-light: #fff4c2;
+  --color-sunshine-dark: #f5b700;
+
+  --color-tangerine: #ff8c42;
+  --color-tangerine-light: #ffe3cf;
+
+  --color-sky: #3fa7f5;
+  --color-sky-light: #ddf0ff;
+
+  --color-meadow: #3dbe6a;
+  --color-meadow-light: #ddf6e5;
+
+  --color-berry: #e8467c;
+  --color-berry-light: #fde0ea;
+
+  --color-cream: #fffbf0;
+  --color-ink: #1f2440;
+  --color-ink-soft: #4a4f6a;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Clear, consistent focus ring for keyboard users */
+:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
