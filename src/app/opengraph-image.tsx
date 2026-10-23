@@ -5,8 +5,8 @@ export const alt = 'Show Up SOKY: community events across South Central Kentucky
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-const INK = '#1f2440'
-const INK_SOFT = '#4a4f6a'
+const INK = '#1b3a2f'
+const INK_SOFT = '#4b5e54'
 
 export default function OpengraphImage() {
   return new ImageResponse(

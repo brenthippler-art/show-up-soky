@@ -7,7 +7,7 @@ export async function sendConfirmationEmail(to: string, confirmToken: string) {
   const confirmUrl = `${process.env.SITE_URL}/subscribe/confirm?token=${confirmToken}`
 
   const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1f2440;">
+    <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1b3a2f;">
       <div style="background: #ffd23f; padding: 24px; border-radius: 16px 16px 0 0;">
         <h1 style="margin: 0; font-size: 26px;">Show Up SOKY ☀️</h1>
       </div>
@@ -16,12 +16,12 @@ export async function sendConfirmationEmail(to: string, confirmToken: string) {
         short list of community events every Monday.</p>
         <p style="margin: 28px 0;">
           <a href="${confirmUrl}"
-             style="background: #1f2440; color: #fffbf0; padding: 14px 24px; border-radius: 999px;
+             style="background: #1b3a2f; color: #fffbf0; padding: 14px 24px; border-radius: 999px;
                     text-decoration: none; font-weight: bold;">
             Confirm my subscription
           </a>
         </p>
-        <p style="font-size: 14px; color: #4a4f6a;">Didn't sign up? Ignore this email and you won't
+        <p style="font-size: 14px; color: #4b5e54;">Didn't sign up? Ignore this email and you won't
         hear from us.</p>
       </div>
     </div>
@@ -72,7 +72,7 @@ export async function sendAdminNotification({ subject, heading, rows, buttonLabe
     .join('')
 
   const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1f2440;">
+    <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1b3a2f;">
       <div style="background: #ffd23f; padding: 20px 24px; border-radius: 16px 16px 0 0;">
         <p style="margin: 0; font-size: 14px; font-weight: bold;">Show Up SOKY · Needs review</p>
         <h1 style="margin: 6px 0 0; font-size: 22px;">${escapeHtml(heading)}</h1>
@@ -83,7 +83,7 @@ export async function sendAdminNotification({ subject, heading, rows, buttonLabe
         </table>
         <p style="margin: 24px 0 4px;">
           <a href="${process.env.SITE_URL}${buttonPath}"
-             style="background: #1f2440; color: #fffbf0; padding: 12px 22px; border-radius: 999px;
+             style="background: #1b3a2f; color: #fffbf0; padding: 12px 22px; border-radius: 999px;
                     text-decoration: none; font-weight: bold;">
             ${escapeHtml(buttonLabel)}
           </a>

@@ -22,13 +22,13 @@ function eventHtml(event: DigestEvent) {
 
   return `
     <tr><td style="padding: 16px 0; border-bottom: 1px solid #ffe3cf;">
-      <p style="margin: 0; font-size: 14px; font-weight: bold; color: #4a4f6a;">
+      <p style="margin: 0; font-size: 14px; font-weight: bold; color: #4b5e54;">
         ${escapeHtml(formatDate(event.starts_at))}
       </p>
       <p style="margin: 4px 0; font-size: 19px; font-weight: bold;">
-        <a href="${escapeHtml(link)}" style="color: #1f2440;">${escapeHtml(event.title)}</a>
+        <a href="${escapeHtml(link)}" style="color: #1b3a2f;">${escapeHtml(event.title)}</a>
       </p>
-      <p style="margin: 0; font-size: 15px; color: #4a4f6a;">
+      <p style="margin: 0; font-size: 15px; color: ##4b5e54;">
         ${escapeHtml(where)}${host ? ` · Hosted by ${escapeHtml(host)}` : ''}
       </p>
     </td></tr>
@@ -39,7 +39,7 @@ function buildDigestHtml(events: DigestEvent[], unsubscribeUrl: string) {
   const siteUrl = process.env.SITE_URL!
 
   return `
-    <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1f2440;">
+    <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1b3a2f;">
       <div style="background: #ffd23f; padding: 24px; border-radius: 16px 16px 0 0;">
         <h1 style="margin: 0; font-size: 26px;">Show Up SOKY ☀️</h1>
         <p style="margin: 6px 0 0; font-size: 16px;">This week in South Central Kentucky</p>
@@ -50,15 +50,15 @@ function buildDigestHtml(events: DigestEvent[], unsubscribeUrl: string) {
         </table>
         <p style="margin: 28px 0 8px;">
           <a href="${siteUrl}/events"
-             style="background: #1f2440; color: #fffbf0; padding: 12px 22px; border-radius: 999px;
+             style="background: #1b3a2f; color: #fffbf0; padding: 12px 22px; border-radius: 999px;
                     text-decoration: none; font-weight: bold;">
             See the full calendar
           </a>
         </p>
       </div>
-      <p style="font-size: 13px; color: #4a4f6a; text-align: center; margin-top: 20px;">
+      <p style="font-size: 13px; color: #4b5e54; text-align: center; margin-top: 20px;">
         You’re getting this because you signed up at Show Up SOKY.<br />
-        <a href="${unsubscribeUrl}" style="color: #4a4f6a;">Unsubscribe</a>
+        <a href="${unsubscribeUrl}" style="color: #4b5e54;">Unsubscribe</a>
       </p>
     </div>
   `

@@ -200,7 +200,7 @@ export default function EventsPage({
 }) {
   return (
     <>
-      <section className="bg-linear-to-br from-sunshine-light via-cream to-tangerine-light">
+      <section className="bg-linear-to-br from-sunshine-light via-cream to-meadow-light">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
           <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">
             Upcoming events
