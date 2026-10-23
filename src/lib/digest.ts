@@ -2,6 +2,7 @@ import 'server-only'
 import { Resend } from 'resend'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { formatDate } from '@/lib/format'
+import { escapeHtml } from '@/lib/email'
 
 type DigestEvent = {
   title: string
@@ -11,15 +12,6 @@ type DigestEvent = {
   rsvp_url: string | null
   organizations: { name: string } | null
   id: string
-}
-
-function escapeHtml(text: string) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
 }
 
 function eventHtml(event: DigestEvent) {

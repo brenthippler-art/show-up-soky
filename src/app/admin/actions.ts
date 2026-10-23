@@ -19,6 +19,7 @@ async function setEventStatus(formData: FormData, status: 'approved' | 'rejected
 
   updateTag('events')
   revalidatePath('/admin')
+  redirect('/admin')
 }
 
 export async function approveEvent(formData: FormData) {
@@ -73,4 +74,5 @@ export async function createOrgFromEvent(formData: FormData) {
   updateTag('orgs')
   updateTag('events')
   revalidatePath('/admin')
+  redirect('/admin')
 }

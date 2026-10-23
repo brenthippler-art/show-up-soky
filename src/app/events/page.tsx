@@ -40,7 +40,7 @@ function groupByDay(events: Event[]) {
   return map;
 }
 
-async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
+async function EventsContent({ searchParams }: { searchParams: SearchParams }) {
   await connection();
   const params = await searchParams;
 
@@ -72,7 +72,6 @@ async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
       (!filters.online || event.is_online),
   );
 
-  // Every homepage link keeps the current filters
   const href = (p: HrefParams) => eventsHref({ ...p, ...filters });
 
   // ---------- Dates ----------
@@ -218,7 +217,7 @@ export default function EventsPage({
             <p className="text-lg font-bold text-ink-soft">Loading events…</p>
           }
         >
-          <HomeContent searchParams={searchParams} />
+          <EventsContent searchParams={searchParams} />
         </Suspense>
       </main>
     </>
