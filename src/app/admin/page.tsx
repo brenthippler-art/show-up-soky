@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Loading from "./loading";
 import AdminNav from "@/components/AdminNav";
-
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Review Queue | Show Up SOKY",
@@ -187,6 +187,12 @@ async function ReviewQueue() {
                     Reject<span className="sr-only"> {event.title}</span>
                   </button>
                 </form>
+                <Link
+                  href={`/admin/events/${event.id}`}
+                  className="rounded-full px-6 py-2 font-bold ring-2 ring-ink hover:bg-sunshine-light"
+                >
+                  Edit first<span className="sr-only"> {event.title}</span>
+                </Link>
               </div>
             </article>
           ))

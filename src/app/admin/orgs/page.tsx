@@ -11,6 +11,7 @@ import {
   setOrgLogo,
   removeOrgLogo,
 } from "./actions";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Groups | Show Up SOKY Admin",
@@ -146,11 +147,32 @@ async function OrgsList() {
                   <div>
                     <p className="text-lg font-bold">
                       {org.name}{" "}
-                      {org.status === "pending" && (
-                        <span className="rounded-full bg-tangerine-light px-2 py-0.5 text-xs font-bold">
-                          Pending
-                        </span>
-                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          href={`/admin/orgs/${org.id}`}
+                          className="rounded-full px-4 py-2 text-sm font-bold ring-2 ring-ink hover:bg-sunshine-light"
+                        >
+                          Edit<span className="sr-only"> {org.name}</span>
+                        </Link>
+                        {org.status === "pending" && (
+                          <>
+                            <form action={approveOrg}>
+                              <input type="hidden" name="id" value={org.id} />
+                              <button className="rounded-full bg-meadow px-4 py-2 text-sm font-bold hover:brightness-95">
+                                Approve
+                                <span className="sr-only"> {org.name}</span>
+                              </button>
+                            </form>
+                            <form action={deleteOrg}>
+                              <input type="hidden" name="id" value={org.id} />
+                              <button className="rounded-full px-4 py-2 text-sm font-bold ring-2 ring-berry hover:bg-berry-light">
+                                Remove
+                                <span className="sr-only"> {org.name}</span>
+                              </button>
+                            </form>
+                          </>
+                        )}
+                      </div>
                     </p>
                     <p className="text-sm text-ink-soft">
                       /orgs/{org.slug}

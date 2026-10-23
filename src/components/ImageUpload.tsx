@@ -24,10 +24,11 @@ type Props = {
   bucket: Bucket
   folder: string
   help?: string
+  defaultUrl?: string | null
 }
 
-export default function ImageUpload({ id, name, label, bucket, folder, help }: Props) {
-  const [url, setUrl] = useState<string | null>(null)
+export default function ImageUpload({ id, name, label, bucket, folder, help, defaultUrl }: Props) {
+  const [url, setUrl] = useState<string | null>(defaultUrl ?? null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
