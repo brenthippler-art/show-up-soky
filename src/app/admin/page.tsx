@@ -3,7 +3,7 @@ import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/format'
 import { approveEvent, rejectEvent, signOut } from './actions'
 import { Suspense } from 'react'
-import Loading from './Loading'
+import Loading from './loading'
 
 export const metadata: Metadata = {
   title: 'Review Queue | Show Up SOKY',
