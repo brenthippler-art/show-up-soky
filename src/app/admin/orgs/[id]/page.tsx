@@ -8,6 +8,7 @@ import ImageUpload from '@/components/ImageUpload'
 import { requireAdmin } from '@/lib/auth'
 import { isUuid } from '@/lib/url'
 import { updateOrg, deleteOrg } from '../actions'
+import { FOCUS_AREAS } from '@/lib/focus-area'
 
 export const metadata: Metadata = {
   title: 'Edit Group | Show Up SOKY Admin',
@@ -30,7 +31,7 @@ async function EditOrg({ params, searchParams }: Props) {
 
   const { data: org } = await supabase
     .from('organizations')
-    .select('id, name, slug, description, website_url, contact_email, ical_url, logo_url, status')
+    .select('*')
     .eq('id', id)
     .maybeSingle()
 
@@ -82,9 +83,69 @@ async function EditOrg({ params, searchParams }: Props) {
         </div>
 
         <div className="sm:col-span-2">
-          <label htmlFor="description" className="block font-bold">Description</label>
-          <textarea id="description" name="description" rows={4} defaultValue={org.description ?? ''} className={inputClass} />
-        </div>
+  <label htmlFor="tagline" className="block font-bold">Tagline</label>
+  <input id="tagline" name="tagline" maxLength={140} defaultValue={org.tagline ?? ''} className={inputClass} />
+</div>
+
+<div className="sm:col-span-2">
+  <label htmlFor="description" className="block font-bold">About</label>
+  <textarea id="description" name="description" rows={4} defaultValue={org.description ?? ''} className={inputClass} />
+</div>
+
+<div className="sm:col-span-2">
+  <label htmlFor="focus_area" className="block font-bold">Focus area</label>
+  <select id="focus_area" name="focus_area" defaultValue={org.focus_areas?.[0] ?? ''} className={inputClass}>
+    <option value="">None</option>
+    {FOCUS_AREAS.map((area) => (
+      <option key={area.value} value={area.value}>{area.label}</option>
+    ))}
+  </select>
+</div>
+
+<div>
+  <label htmlFor="meeting_schedule" className="block font-bold">When they meet</label>
+  <input id="meeting_schedule" name="meeting_schedule" defaultValue={org.meeting_schedule ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="meeting_location" className="block font-bold">Where they meet</label>
+  <input id="meeting_location" name="meeting_location" defaultValue={org.meeting_location ?? ''} className={inputClass} />
+</div>
+
+<div className="sm:col-span-2">
+  <label htmlFor="get_involved" className="block font-bold">How to get involved</label>
+  <textarea id="get_involved" name="get_involved" rows={3} defaultValue={org.get_involved ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="public_email" className="block font-bold">Public email</label>
+  <input id="public_email" name="public_email" type="email" defaultValue={org.public_email ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="phone" className="block font-bold">Phone</label>
+  <input id="phone" name="phone" type="tel" defaultValue={org.phone ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="facebook_url" className="block font-bold">Facebook</label>
+  <input id="facebook_url" name="facebook_url" type="url" defaultValue={org.facebook_url ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="instagram_url" className="block font-bold">Instagram</label>
+  <input id="instagram_url" name="instagram_url" type="url" defaultValue={org.instagram_url ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="organizer_name" className="block font-bold">Organizer name (private)</label>
+  <input id="organizer_name" name="organizer_name" defaultValue={org.organizer_name ?? ''} className={inputClass} />
+</div>
+
+<div>
+  <label htmlFor="organizer_email" className="block font-bold">Organizer email (private)</label>
+  <input id="organizer_email" name="organizer_email" type="email" defaultValue={org.organizer_email ?? ''} className={inputClass} />
+</div>
 
         <div className="sm:col-span-2">
           <ImageUpload

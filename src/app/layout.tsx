@@ -16,10 +16,11 @@ const atkinson = Atkinson_Hyperlegible({
 });
 
 export const metadata: Metadata = {
-  title: "Show Up SOKY",
+  metadataBase: new URL(process.env.SITE_URL ?? 'http://localhost:3000'),
+  title: 'Show Up SOKY',
   description:
-    "Community events advancing rights and freedoms for every person in South Central Kentucky.",
-};
+    'Community events advancing rights and freedoms for every person in South Central Kentucky.',
+}
 
 export default function RootLayout({
   children,

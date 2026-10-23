@@ -10,6 +10,7 @@ type DigestEvent = {
   is_online: boolean
   rsvp_url: string | null
   organizations: { name: string } | null
+  id: string
 }
 
 function escapeHtml(text: string) {
@@ -23,7 +24,7 @@ function escapeHtml(text: string) {
 
 function eventHtml(event: DigestEvent) {
   const siteUrl = process.env.SITE_URL!
-  const link = event.rsvp_url ?? siteUrl
+  const link = `${siteUrl}/events/${event.id}`
   const where = event.is_online ? 'Online' : event.location_name ?? ''
   const host = event.organizations?.name
 
@@ -79,7 +80,7 @@ export async function sendWeeklyDigest() {
 
   const { data: eventsData, error: eventsError } = await supabase
     .from('events')
-    .select('title, starts_at, location_name, is_online, rsvp_url, organizations ( name )')
+    .select('id, title, starts_at, location_name, is_online, rsvp_url, organizations ( name )')
     .eq('status', 'approved')
     .gte('starts_at', now.toISOString())
     .lt('starts_at', weekFromNow.toISOString())

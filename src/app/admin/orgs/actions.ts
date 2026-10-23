@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/auth'
 import { uniqueSlug } from '@/lib/slug'
 import { isStorageUrl } from '@/lib/storage'
 import { cleanUrl } from '@/lib/url'
+import { isFocusArea } from '@/lib/focus-area'
 
 function logoFrom(formData: FormData) {
   const url = String(formData.get('logo_url') ?? '').trim()
@@ -16,6 +17,7 @@ function refresh() {
   updateTag('orgs')
   updateTag('events')
   revalidatePath('/admin/orgs')
+  redirect('/admin/orgs')
 }
 
 export async function createOrg(formData: FormData) {
@@ -92,12 +94,25 @@ export async function updateOrg(formData: FormData) {
 
   const { error } = await supabase
     .from('organizations')
-    .update({
+        .update({
       name,
       status,
+      tagline: String(formData.get('tagline') ?? '').trim() || null,
       description: String(formData.get('description') ?? '').trim() || null,
+      focus_areas: isFocusArea(String(formData.get('focus_area') ?? ''))
+        ? [String(formData.get('focus_area'))]
+        : [],
+      meeting_schedule: String(formData.get('meeting_schedule') ?? '').trim() || null,
+      meeting_location: String(formData.get('meeting_location') ?? '').trim() || null,
+      get_involved: String(formData.get('get_involved') ?? '').trim() || null,
+      public_email: String(formData.get('public_email') ?? '').trim() || null,
+      phone: String(formData.get('phone') ?? '').trim() || null,
       website_url: cleanUrl(String(formData.get('website_url') ?? '').trim()),
+      facebook_url: cleanUrl(String(formData.get('facebook_url') ?? '').trim()),
+      instagram_url: cleanUrl(String(formData.get('instagram_url') ?? '').trim()),
       contact_email: String(formData.get('contact_email') ?? '').trim() || null,
+      organizer_name: String(formData.get('organizer_name') ?? '').trim() || null,
+      organizer_email: String(formData.get('organizer_email') ?? '').trim() || null,
       ical_url: cleanUrl(String(formData.get('ical_url') ?? '').trim()),
       logo_url: logoFrom(formData),
     })

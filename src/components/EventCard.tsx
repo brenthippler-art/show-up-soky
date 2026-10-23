@@ -32,22 +32,21 @@ export default function EventCard({ event }: { event: Event }) {
     <article className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-ink/5 transition hover:-translate-y-0.5 hover:shadow-lg">
       <div className={`h-2 ${style.bar}`} />
       {event.image_url && (
-        <a
-          href={event.image_url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href={`/events/${event.id}`}
+          aria-hidden="true"
+          tabIndex={-1}
           className="block bg-sunshine-light"
         >
           <Image
             src={event.image_url}
-            alt={`Flyer for ${event.title}`}
+            alt=""
             width={800}
             height={1000}
             sizes="(max-width: 768px) 100vw, 768px"
-            className="mx-auto h-auto max-h-96 w-auto object-contain"
+            className="mx-auto h-auto max-h-96 w-auto object-contain transition hover:opacity-90"
           />
-          <span className="sr-only"> (opens full size in a new tab)</span>
-        </a>
+        </Link>
       )}
       <div className="p-6">
         <div className="flex flex-wrap items-center gap-2">
@@ -69,7 +68,12 @@ export default function EventCard({ event }: { event: Event }) {
         </div>
 
         <h2 className="mt-3 text-2xl font-extrabold leading-tight">
-          {event.title}
+          <Link
+            href={`/events/${event.id}`}
+            className="hover:underline hover:decoration-sunshine-dark hover:decoration-4 hover:underline-offset-4"
+          >
+            {event.title}
+          </Link>
         </h2>
 
         <p className="mt-2 font-bold text-ink-soft">

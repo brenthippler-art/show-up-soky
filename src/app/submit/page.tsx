@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SubmitForm from "./SubmitForm";
 import { getApprovedOrgs } from "@/lib/orgs";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Submit an Event | Show Up SOKY",
@@ -15,6 +16,16 @@ export default async function SubmitPage() {
       <p className="mt-3 text-lg text-ink-soft">
         Hosting something in South Central Kentucky? Share it here. We review
         every submission before it goes on the calendar.
+      </p>
+      <p className="mt-2 text-ink-soft">
+        Is your group not in the list?{" "}
+        <Link
+          href="/register"
+          className="font-bold underline underline-offset-4"
+        >
+          Register it here
+        </Link>{" "}
+        so your events show your logo and profile.
       </p>
       <div className="mt-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-ink/5 sm:p-8">
         <SubmitForm orgs={orgs} />

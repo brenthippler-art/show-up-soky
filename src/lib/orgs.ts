@@ -31,7 +31,22 @@ export type OrgProfile = {
   description: string | null
   website_url: string | null
   logo_url: string | null
+  tagline: string | null
+  focus_areas: string[]
+  meeting_schedule: string | null
+  meeting_location: string | null
+  get_involved: string | null
+  public_email: string | null
+  phone: string | null
+  facebook_url: string | null
+  instagram_url: string | null
 }
+
+const ORG_PROFILE_COLUMNS = `
+  id, name, slug, description, website_url, logo_url, tagline, focus_areas,
+  meeting_schedule, meeting_location, get_involved, public_email, phone,
+  facebook_url, instagram_url
+`
 
 export async function getOrgDirectory(): Promise<OrgProfile[]> {
   'use cache'
@@ -42,7 +57,7 @@ export async function getOrgDirectory(): Promise<OrgProfile[]> {
 
   const { data, error } = await supabase
     .from('organizations')
-    .select('id, name, slug, description, website_url, logo_url')
+        .select(ORG_PROFILE_COLUMNS)
     .order('name', { ascending: true })
 
   if (error) throw error
@@ -58,7 +73,7 @@ export async function getOrgPage(slug: string) {
 
   const { data: org, error } = await supabase
     .from('organizations')
-    .select('id, name, slug, description, website_url, logo_url')
+        .select(ORG_PROFILE_COLUMNS)
     .eq('slug', slug)
     .maybeSingle()
 
