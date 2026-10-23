@@ -3,13 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-
-const LINKS = [
-  { href: '/events', label: 'Events' },
-  { href: '/orgs', label: 'Groups' },
-]
-
-const CTA = { href: '/submit', label: 'Submit an event' }
+import { NAV_CTA as CTA, NAV_LINKS as LINKS } from '@/lib/nav'
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)

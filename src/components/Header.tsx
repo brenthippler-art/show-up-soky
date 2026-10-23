@@ -1,6 +1,40 @@
-import Link from "next/link";
-import SiteNav from "@/components/SiteNav";
-import SunMark from "@/components/SunMark";
+import Link from 'next/link'
+import { Suspense } from 'react'
+import SiteNav from '@/components/SiteNav'
+import SunMark from '@/components/SunMark'
+import { NAV_CTA, NAV_LINKS } from '@/lib/nav'
+
+function NavFallback() {
+  return (
+    <>
+      <nav aria-label="Main" className="hidden md:block">
+        <ul className="flex items-center gap-4">
+          {NAV_LINKS.map((link) => (
+            <li key={link.href}>
+              <Link href={link.href} className="rounded-full px-3 py-2 font-bold hover:bg-sunshine-light">
+                {link.label}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link
+              href={NAV_CTA.href}
+              className="rounded-full bg-sunshine px-4 py-2 font-bold shadow-sm hover:bg-sunshine-dark"
+            >
+              {NAV_CTA.label}
+            </Link>
+          </li>
+        </ul>
+      </nav>
+      <span
+        aria-hidden="true"
+        className="invisible rounded-full px-4 py-2 font-bold ring-2 ring-ink md:hidden"
+      >
+        Menu
+      </span>
+    </>
+  )
+}
 
 export default function Header() {
   return (
@@ -12,8 +46,10 @@ export default function Header() {
             Show Up <span className="text-tangerine">SOKY</span>
           </span>
         </Link>
-        <SiteNav />
+        <Suspense fallback={<NavFallback />}>
+          <SiteNav />
+        </Suspense>
       </div>
     </header>
-  );
+  )
 }
