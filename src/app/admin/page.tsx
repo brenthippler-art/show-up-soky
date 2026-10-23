@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/format'
 import { approveEvent, rejectEvent, signOut } from './actions'
+import { Suspense } from 'react'
+import Loading from './loading'
 
 export const metadata: Metadata = {
   title: 'Review Queue | Show Up SOKY',
@@ -25,7 +27,7 @@ type PendingEvent = {
   organizations: { name: string } | null
 }
 
-export default async function AdminPage() {
+async function ReviewQueue() {
   const { supabase, user } = await requireAdmin()
 
   const { data, error } = await supabase
@@ -128,5 +130,13 @@ export default async function AdminPage() {
         )}
       </div>
     </main>
+  )
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ReviewQueue />
+    </Suspense>
   )
 }
