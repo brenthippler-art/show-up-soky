@@ -3,6 +3,9 @@
 import { fromZonedTime } from 'date-fns-tz'
 import { createPublicClient } from '@/lib/supabase/public'
 import { isStorageUrl } from '@/lib/storage'
+import { after } from 'next/server'
+import { sendAdminNotification } from '@/lib/email'
+import { formatDate } from '@/lib/format'
 
 const EVENT_TYPES = ['rally', 'meeting', 'volunteer', 'town_hall', 'training', 'social', 'other'] as const
 
@@ -28,8 +31,39 @@ export async function submitEvent(
 ): Promise<SubmitState> {
   // Honeypot: real people never see or fill this field. Bots usually do.
   if (formData.get('website')) {
-    return { status: 'success' }
-  }
+      after(async () => {
+    try {
+      let groupName = values.submitted_org_name ? `${values.submitted_org_name} (not registered)` : null
+
+      if (values.org_id) {
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('name')
+          .eq('id', values.org_id)
+          .maybeSingle()
+        groupName = org?.name ?? groupName
+      }
+
+      await sendAdminNotification({
+        subject: `New event to review: ${values.title}`,
+        heading: values.title,
+        rows: [
+          ['When', formatDate(startsAt!.toISOString())],
+          ['Where', isOnline ? 'Online' : values.location_name],
+          ['Group', groupName],
+          ['Submitted by', values.submitted_by_email],
+          ['Flyer', imageUrl ? 'Yes' : null],
+        ],
+        buttonLabel: 'Open the review queue',
+        buttonPath: '/admin',
+      })
+    } catch (error) {
+      console.error('Admin notification failed:', error)
+    }
+  })
+
+  return { status: 'success' }
+}
 
   const get = (key: string) => String(formData.get(key) ?? '').trim()
 

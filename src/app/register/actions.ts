@@ -5,6 +5,9 @@ import { uniqueSlug } from '@/lib/slug'
 import { cleanUrl } from '@/lib/url'
 import { isStorageUrl } from '@/lib/storage'
 import { isFocusArea } from '@/lib/focus-area'
+import { after } from 'next/server'
+import { sendAdminNotification } from '@/lib/email'
+import { focusLabel } from '@/lib/focus-area'
 
 export type RegisterState = {
   status: 'idle' | 'success' | 'error'
@@ -94,6 +97,27 @@ export async function registerOrg(
       values,
     }
   }
+
+    after(async () => {
+    try {
+      await sendAdminNotification({
+        subject: `New group to review: ${values.name}`,
+        heading: values.name,
+        rows: [
+          ['Tagline', values.tagline],
+          ['Focus area', focusLabel(values.focus_area)],
+          ['Meets', values.meeting_schedule],
+          ['Public email', values.public_email],
+          ['Organizer', `${values.organizer_name} (${values.organizer_email})`],
+          ['Logo', logo ? 'Yes' : null],
+        ],
+        buttonLabel: 'Review groups',
+        buttonPath: '/admin/orgs',
+      })
+    } catch (error) {
+      console.error('Admin notification failed:', error)
+    }
+  })
 
   return { status: 'success' }
 }

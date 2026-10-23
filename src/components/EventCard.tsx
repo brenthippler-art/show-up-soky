@@ -1,36 +1,17 @@
-import Link from "next/link";
-import Image from "next/image";
-import type { Event, EventType } from "@/types/event";
-import { formatDate } from "@/lib/format";
-import OrgAvatar from "@/components/OrgAvatar";
-
-const typeStyles: Record<
-  EventType,
-  { label: string; bar: string; pill: string }
-> = {
-  rally: { label: "Rally", bar: "bg-berry", pill: "bg-berry-light" },
-  meeting: { label: "Meeting", bar: "bg-sky", pill: "bg-sky-light" },
-  volunteer: { label: "Volunteer", bar: "bg-meadow", pill: "bg-meadow-light" },
-  town_hall: {
-    label: "Town Hall",
-    bar: "bg-tangerine",
-    pill: "bg-tangerine-light",
-  },
-  training: {
-    label: "Training",
-    bar: "bg-sunshine",
-    pill: "bg-sunshine-light",
-  },
-  social: { label: "Social", bar: "bg-berry", pill: "bg-berry-light" },
-  other: { label: "Event", bar: "bg-sky", pill: "bg-sky-light" },
-};
+import Image from 'next/image'
+import Link from 'next/link'
+import OrgAvatar from '@/components/OrgAvatar'
+import { EVENT_TYPE_STYLES } from '@/lib/event-types'
+import { formatDate } from '@/lib/format'
+import type { Event } from '@/types/event'
 
 export default function EventCard({ event }: { event: Event }) {
-  const style = typeStyles[event.event_type];
+  const style = EVENT_TYPE_STYLES[event.event_type]
 
   return (
     <article className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-ink/5 transition hover:-translate-y-0.5 hover:shadow-lg">
       <div className={`h-2 ${style.bar}`} />
+
       {event.image_url && (
         <Link
           href={`/events/${event.id}`}
@@ -48,22 +29,17 @@ export default function EventCard({ event }: { event: Event }) {
           />
         </Link>
       )}
+
       <div className="p-6">
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded-full px-3 py-1 text-sm font-bold ${style.pill}`}
-          >
+          <span className={`rounded-full px-3 py-1 text-sm font-bold ${style.pill}`}>
             {style.label}
           </span>
           {event.is_free && (
-            <span className="rounded-full bg-meadow-light px-3 py-1 text-sm font-bold">
-              Free
-            </span>
+            <span className="rounded-full bg-meadow-light px-3 py-1 text-sm font-bold">Free</span>
           )}
           {event.is_online && (
-            <span className="rounded-full bg-sky-light px-3 py-1 text-sm font-bold">
-              Online
-            </span>
+            <span className="rounded-full bg-sky-light px-3 py-1 text-sm font-bold">Online</span>
           )}
         </div>
 
@@ -83,15 +59,11 @@ export default function EventCard({ event }: { event: Event }) {
         {event.location_name && (
           <p className="mt-1 text-ink-soft">
             {event.location_name}
-            {event.address && (
-              <span className="block text-sm">{event.address}</span>
-            )}
+            {event.address && <span className="block text-sm">{event.address}</span>}
           </p>
         )}
 
-        {event.description && (
-          <p className="mt-4 leading-relaxed">{event.description}</p>
-        )}
+        {event.description && <p className="mt-4 leading-relaxed">{event.description}</p>}
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           {event.organizations ? (
@@ -102,7 +74,7 @@ export default function EventCard({ event }: { event: Event }) {
                 size="sm"
               />
               <span>
-                Hosted by{" "}
+                Hosted by{' '}
                 <Link
                   href={`/orgs/${event.organizations.slug}`}
                   className="font-bold text-ink underline decoration-sunshine-dark decoration-2 underline-offset-4 hover:decoration-ink"
@@ -122,15 +94,11 @@ export default function EventCard({ event }: { event: Event }) {
               rel="noopener noreferrer"
               className="rounded-full bg-sunshine px-5 py-2 font-bold shadow-sm hover:bg-sunshine-dark"
             >
-              RSVP
-              <span className="sr-only">
-                {" "}
-                for {event.title} (opens in a new tab)
-              </span>
+              RSVP<span className="sr-only"> for {event.title} (opens in a new tab)</span>
             </a>
           )}
         </div>
       </div>
     </article>
-  );
+  )
 }

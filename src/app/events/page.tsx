@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import SignupForm from "@/components/SignupForm";
 import EventsPanel from "@/components/events/EventsPanel";
 import FilterBar from "@/components/events/FilterBar";
 import MonthCalendar from "@/components/events/MonthCalendar";
@@ -39,25 +38,6 @@ function groupByDay(events: Event[]) {
     map.set(key, list);
   }
   return map;
-}
-
-function SignupBox() {
-  return (
-    <section
-      aria-labelledby="signup-heading"
-      className="rounded-2xl bg-sunshine p-6 shadow-md"
-    >
-      <h2 id="signup-heading" className="text-2xl font-extrabold">
-        Never miss a chance to show up.
-      </h2>
-      <p className="mt-2">
-        One email every Monday with the week’s events. Unsubscribe anytime.
-      </p>
-      <div className="mt-4">
-        <SignupForm />
-      </div>
-    </section>
-  );
 }
 
 async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
@@ -183,11 +163,8 @@ async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
         }}
       />
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-3 lg:grid-rows-[auto_1fr]">
-        <aside
-          aria-label="Choose dates"
-          className="space-y-4 lg:col-start-1 lg:row-start-1"
-        >
+      <div className="mt-8 grid gap-8 lg:grid-cols-3 lg:items-start">
+        <aside aria-label="Choose dates" className="space-y-4">
           <QuickPicks sections={sections} />
 
           <details className="rounded-2xl bg-white shadow-sm ring-1 ring-ink/5 lg:hidden">
@@ -200,10 +177,7 @@ async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
           <div className="hidden lg:block">{calendar}</div>
         </aside>
 
-        <div
-          id="events"
-          className="scroll-mt-6 lg:col-span-2 lg:col-start-2 lg:row-span-2 lg:row-start-1"
-        >
+        <div id="events" className="scroll-mt-6 lg:col-span-2">
           <EventsPanel
             selection={selection}
             today={today}
@@ -214,10 +188,6 @@ async function HomeContent({ searchParams }: { searchParams: SearchParams }) {
             filtered={filtered}
             clearHref={eventsHref(keepParams)}
           />
-        </div>
-
-        <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
-          <SignupBox />
         </div>
       </div>
     </>

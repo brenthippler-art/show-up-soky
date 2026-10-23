@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import SignupForm from "@/components/SignupForm";
 
-const HIDDEN_EXACT = ["/", "/events"];
+const HIDDEN_EXACT = ["/"];
 const HIDDEN_PREFIX = ["/subscribe", "/unsubscribe", "/admin", "/login"];
 
 export default function FooterSignup() {
