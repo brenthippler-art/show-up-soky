@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { submitEvent, type SubmitState } from "./actions";
 import type { OrgOption } from "@/lib/orgs";
+import ImageUpload from "@/components/ImageUpload";
 
 const initialState: SubmitState = { status: "idle" };
 
@@ -19,7 +20,13 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export default function SubmitForm({ orgs }: { orgs: OrgOption[] }) {
+function SubmitFormInner({
+  orgs,
+  onReset,
+}: {
+  orgs: OrgOption[];
+  onReset: () => void;
+}) {
   const [state, formAction, isPending] = useActionState(
     submitEvent,
     initialState,
@@ -40,6 +47,13 @@ export default function SubmitForm({ orgs }: { orgs: OrgOption[] }) {
           Your event was submitted. We’ll review it shortly, and once it’s
           approved it’ll appear on the calendar.
         </p>
+        <button
+          type="button"
+          onClick={onReset}
+          className="mt-6 rounded-full bg-white px-6 py-2 font-bold ring-2 ring-ink hover:bg-sunshine-light"
+        >
+          Submit another event
+        </button>
       </div>
     );
   }
@@ -279,7 +293,14 @@ export default function SubmitForm({ orgs }: { orgs: OrgOption[] }) {
           className={inputClass}
         />
       </div>
-
+      <ImageUpload
+        id="image"
+        name="image_url"
+        label="Flyer or image"
+        bucket="event-images"
+        folder="submissions"
+        help="Optional. JPG, PNG, WebP or GIF, up to 5 MB."
+      />
       <div>
         <label htmlFor="submitted_by_email" className={labelClass}>
           Your email *
@@ -309,5 +330,17 @@ export default function SubmitForm({ orgs }: { orgs: OrgOption[] }) {
         {isPending ? "Submitting…" : "Submit event"}
       </button>
     </form>
+  );
+}
+
+export default function SubmitForm({ orgs }: { orgs: OrgOption[] }) {
+  const [formKey, setFormKey] = useState(0);
+
+  return (
+    <SubmitFormInner
+      key={formKey}
+      orgs={orgs}
+      onReset={() => setFormKey((k) => k + 1)}
+    />
   );
 }

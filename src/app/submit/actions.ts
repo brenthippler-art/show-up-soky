@@ -2,6 +2,7 @@
 
 import { fromZonedTime } from 'date-fns-tz'
 import { createPublicClient } from '@/lib/supabase/public'
+import { isStorageUrl } from '@/lib/storage'
 
 const EVENT_TYPES = ['rally', 'meeting', 'volunteer', 'town_hall', 'training', 'social', 'other'] as const
 
@@ -48,6 +49,8 @@ export async function submitEvent(
   }
   const isOnline = formData.get('is_online') === 'on'
   const isFree = formData.get('is_free') === 'on'
+  const rawImageUrl = get('image_url')
+  const imageUrl = rawImageUrl && isStorageUrl(rawImageUrl, 'event-images') ? rawImageUrl : null
 
   const errors: Record<string, string> = {}
 
@@ -100,6 +103,7 @@ export async function submitEvent(
     online_url: isOnline ? values.online_url || null : null,
     is_free: isFree,
     rsvp_url: values.rsvp_url || null,
+    image_url: imageUrl,
     event_type: values.event_type,
     org_id: values.org_id || null,
     submitted_org_name: values.submitted_org_name || null,

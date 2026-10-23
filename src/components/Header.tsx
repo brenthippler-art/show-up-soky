@@ -41,6 +41,14 @@ export default function Header() {
             </li>
             <li>
               <Link
+                href="/orgs"
+                className="rounded-full px-3 py-2 font-bold hover:bg-sunshine-light"
+              >
+                Groups
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/submit"
                 className="rounded-full bg-sunshine px-4 py-2 font-bold shadow-sm hover:bg-sunshine-dark"
               >

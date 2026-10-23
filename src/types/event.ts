@@ -20,5 +20,6 @@ export type Event = {
   event_type: EventType
   is_free: boolean
   rsvp_url: string | null
-  organizations: { name: string; slug: string } | null
+  image_url: string | null
+    organizations: { name: string; slug: string; logo_url: string | null } | null
 }

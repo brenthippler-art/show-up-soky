@@ -14,8 +14,8 @@ export async function getUpcomingEvents(): Promise<Event[]> {
     .select(`
       id, title, description, starts_at, ends_at,
       location_name, address, is_online, online_url,
-      event_type, is_free, rsvp_url,
-      organizations ( name, slug )
+      event_type, is_free, rsvp_url, image_url,
+      organizations ( name, slug, logo_url )
     `)
     .gte('starts_at', new Date().toISOString())
     .order('starts_at', { ascending: true })

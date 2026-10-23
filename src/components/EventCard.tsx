@@ -1,5 +1,8 @@
+import Link from "next/link";
+import Image from "next/image";
 import type { Event, EventType } from "@/types/event";
-import { formatDate } from '@/lib/format'
+import { formatDate } from "@/lib/format";
+import OrgAvatar from "@/components/OrgAvatar";
 
 const typeStyles: Record<
   EventType,
@@ -28,7 +31,24 @@ export default function EventCard({ event }: { event: Event }) {
   return (
     <article className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-ink/5 transition hover:-translate-y-0.5 hover:shadow-lg">
       <div className={`h-2 ${style.bar}`} />
-
+      {event.image_url && (
+        <a
+          href={event.image_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block bg-sunshine-light"
+        >
+          <Image
+            src={event.image_url}
+            alt={`Flyer for ${event.title}`}
+            width={800}
+            height={1000}
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="mx-auto h-auto max-h-96 w-auto object-contain"
+          />
+          <span className="sr-only"> (opens full size in a new tab)</span>
+        </a>
+      )}
       <div className="p-6">
         <div className="flex flex-wrap items-center gap-2">
           <span
@@ -71,10 +91,20 @@ export default function EventCard({ event }: { event: Event }) {
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           {event.organizations ? (
-            <p className="text-sm text-ink-soft">
-              Hosted by{" "}
-              <span className="font-bold text-ink">
-                {event.organizations.name}
+            <p className="flex items-center gap-2 text-sm text-ink-soft">
+              <OrgAvatar
+                name={event.organizations.name}
+                logoUrl={event.organizations.logo_url}
+                size="sm"
+              />
+              <span>
+                Hosted by{" "}
+                <Link
+                  href={`/orgs/${event.organizations.slug}`}
+                  className="font-bold text-ink underline decoration-sunshine-dark decoration-2 underline-offset-4 hover:decoration-ink"
+                >
+                  {event.organizations.name}
+                </Link>
               </span>
             </p>
           ) : (
