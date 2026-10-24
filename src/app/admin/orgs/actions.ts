@@ -84,6 +84,8 @@ export async function updateOrg(formData: FormData) {
   const id = String(formData.get('id') ?? '')
   const name = String(formData.get('name') ?? '').trim()
   const status = String(formData.get('status') ?? '')
+  const focusArea = String(formData.get('focus_area') ?? '')
+  const focusOther = String(formData.get('focus_area_other') ?? '').trim()
 
   if (!name) {
     redirect(`/admin/orgs/${id}?error=${encodeURIComponent('Name is required.')}`)
@@ -99,9 +101,8 @@ export async function updateOrg(formData: FormData) {
       status,
       tagline: String(formData.get('tagline') ?? '').trim() || null,
       description: String(formData.get('description') ?? '').trim() || null,
-      focus_areas: isFocusArea(String(formData.get('focus_area') ?? ''))
-        ? [String(formData.get('focus_area'))]
-        : [],
+      focus_areas: isFocusArea(focusArea) ? [focusArea] : [],
+      focus_area_other: focusArea === 'other' ? focusOther || null : null,
       meeting_schedule: String(formData.get('meeting_schedule') ?? '').trim() || null,
       meeting_location: String(formData.get('meeting_location') ?? '').trim() || null,
       get_involved: String(formData.get('get_involved') ?? '').trim() || null,

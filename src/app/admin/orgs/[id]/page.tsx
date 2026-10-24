@@ -102,6 +102,17 @@ async function EditOrg({ params, searchParams }: Props) {
   </select>
 </div>
 
+<div className="sm:col-span-2">
+  <label htmlFor="focus_area_other" className="block font-bold">Other focus (used when “Other” is selected)</label>
+  <input
+    id="focus_area_other"
+    name="focus_area_other"
+    maxLength={40}
+    defaultValue={org.focus_area_other ?? ''}
+    className={inputClass}
+  />
+</div>
+
 <div>
   <label htmlFor="meeting_schedule" className="block font-bold">When they meet</label>
   <input id="meeting_schedule" name="meeting_schedule" defaultValue={org.meeting_schedule ?? ''} className={inputClass} />

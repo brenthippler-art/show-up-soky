@@ -33,6 +33,7 @@ export type OrgProfile = {
   logo_url: string | null
   tagline: string | null
   focus_areas: string[]
+  focus_area_other: string | null
   meeting_schedule: string | null
   meeting_location: string | null
   get_involved: string | null
@@ -43,7 +44,7 @@ export type OrgProfile = {
 }
 
 const ORG_PROFILE_COLUMNS = `
-  id, name, slug, description, website_url, logo_url, tagline, focus_areas,
+  id, name, slug, description, website_url, logo_url, tagline, focus_areas, focus_area_other,
   meeting_schedule, meeting_location, get_involved, public_email, phone,
   facebook_url, instagram_url
 `

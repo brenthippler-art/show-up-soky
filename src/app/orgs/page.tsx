@@ -51,7 +51,11 @@ export default async function OrgsPage() {
                 {org.focus_areas.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {org.focus_areas.map((area) => (
-                      <FocusPill key={area} value={area} />
+                      <FocusPill
+                        key={area}
+                        value={area}
+                        other={org.focus_area_other}
+                      />
                     ))}
                   </div>
                 )}

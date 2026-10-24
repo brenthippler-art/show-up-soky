@@ -31,6 +31,7 @@ export async function registerOrg(
     tagline: get('tagline'),
     description: get('description'),
     focus_area: get('focus_area'),
+    focus_area_other: get('focus_area_other'),
     meeting_schedule: get('meeting_schedule'),
     meeting_location: get('meeting_location'),
     get_involved: get('get_involved'),
@@ -53,6 +54,12 @@ export async function registerOrg(
   }
   if (!values.description) errors.description = 'Tell people a bit about your group.'
   if (!isFocusArea(values.focus_area)) errors.focus_area = 'Choose your main focus area.'
+  if (values.focus_area === 'other') {
+  if (!values.focus_area_other) errors.focus_area_other = 'Tell us your group’s focus.'
+    else if (values.focus_area_other.length > 40) {
+      errors.focus_area_other = 'Keep it under 40 characters.'
+    }
+  }
   if (!values.public_email.includes('@')) errors.public_email = 'Add an email the public can use.'
   if (!values.organizer_name) errors.organizer_name = 'We need a name to follow up with.'
   if (!values.organizer_email.includes('@')) errors.organizer_email = 'We need your email to follow up.'
@@ -75,6 +82,7 @@ export async function registerOrg(
     tagline: values.tagline,
     description: values.description,
     focus_areas: [values.focus_area],
+    focus_area_other: values.focus_area === 'other' ? values.focus_area_other : null,
     meeting_schedule: values.meeting_schedule || null,
     meeting_location: values.meeting_location || null,
     get_involved: values.get_involved || null,
@@ -105,7 +113,7 @@ export async function registerOrg(
         heading: values.name,
         rows: [
           ['Tagline', values.tagline],
-          ['Focus area', focusLabel(values.focus_area)],
+          ['Focus area', values.focus_area === 'other' ? `Other: ${values.focus_area_other}` : focusLabel(values.focus_area)],
           ['Meets', values.meeting_schedule],
           ['Public email', values.public_email],
           ['Organizer', `${values.organizer_name} (${values.organizer_email})`],

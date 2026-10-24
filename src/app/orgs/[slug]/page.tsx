@@ -163,7 +163,11 @@ async function OrgContent({ params }: { params: Params }) {
           {org.focus_areas.length > 0 && (
             <div className="mt-5 flex flex-wrap gap-2">
               {org.focus_areas.map((area) => (
-                <FocusPill key={area} value={area} />
+                <FocusPill
+                  key={area}
+                  value={area}
+                  other={org.focus_area_other}
+                />
               ))}
             </div>
           )}

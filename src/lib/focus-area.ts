@@ -10,6 +10,7 @@ export const FOCUS_AREAS = [
   { value: 'health_care', label: 'Health care' },
   { value: 'disability_rights', label: 'Disability rights' },
   { value: 'community_aid', label: 'Community aid' },
+  { value: 'other', label: 'Other' },
 ] as const
 
 export type FocusArea = (typeof FOCUS_AREAS)[number]['value']
