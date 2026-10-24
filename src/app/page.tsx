@@ -4,6 +4,8 @@ import SignupForm from "@/components/SignupForm";
 import { getUpcomingEvents } from "@/lib/events";
 import { formatDate } from "@/lib/format";
 import { EVENT_TYPE_STYLES } from "@/lib/event-types";
+import ComingSoon from "@/components/ComingSoon";
+import { DIGEST_LIVE } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "Show Up SOKY | Community events across South Central Kentucky",
@@ -36,10 +38,13 @@ const STEPS = [
   {
     emoji: "✉️",
     title: "Get the weekly list",
-    body: "One email every Monday morning with the week’s events. No spam, unsubscribe anytime.",
+    body: DIGEST_LIVE
+      ? "One email every Monday morning with the week’s events. No spam, unsubscribe anytime."
+      : "A Monday email with the week’s events is coming soon. Join the list now and we’ll let you know when it launches.",
     href: "#signup",
-    cta: "Sign up below",
+    cta: DIGEST_LIVE ? "Sign up below" : "Join the list",
     bg: "bg-tangerine-light",
+    comingSoon: !DIGEST_LIVE,
   },
 ];
 
@@ -187,7 +192,12 @@ export default function HomePage() {
                 <p className="mt-2 text-3xl" aria-hidden="true">
                   {step.emoji}
                 </p>
-                <h3 className="mt-2 text-xl font-extrabold">{step.title}</h3>
+                <h3 className="mt-2 text-xl font-extrabold">
+                  {step.title}
+                  {step.comingSoon && (
+                    <ComingSoon className="ml-2 ring-1 ring-ink/20" />
+                  )}
+                </h3>
                 <p className="mt-2 flex-1 leading-relaxed">{step.body}</p>
                 <Link
                   href={step.href}
@@ -217,7 +227,10 @@ export default function HomePage() {
             <p className="mt-4 text-lg leading-relaxed">
               Listing your group and events is free. Every event gets its own
               page with directions, add-to-calendar buttons and a share preview
-              for Facebook and group texts, and it goes out in the Monday email.
+              for Facebook and group texts
+              {DIGEST_LIVE
+                ? ", and it goes out in the Monday email."
+                : ". Soon, events will also go out in a Monday email."}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -267,9 +280,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-3xl rounded-3xl bg-sunshine p-8 shadow-md sm:p-10">
           <h2 id="home-signup-heading" className="text-3xl font-extrabold">
             Never miss a chance to show up.
+            {!DIGEST_LIVE && <ComingSoon className="ml-2" />}
           </h2>
           <p className="mt-2 text-lg">
-            One email every Monday with the week’s events. Unsubscribe anytime.
+            {DIGEST_LIVE
+              ? "One email every Monday with the week’s events. Unsubscribe anytime."
+              : "A Monday email with the week’s events is on the way. Join the list and we’ll let you know when it launches."}
           </p>
           <div className="mt-6">
             <SignupForm idPrefix="home" />

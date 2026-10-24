@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { subscribe, type SubscribeState } from '@/app/subscribe/actions'
+import { DIGEST_LIVE } from '@/lib/features'
 
 const initialState: SubscribeState = { status: 'idle' }
 
@@ -44,7 +45,7 @@ export default function SignupForm({ idPrefix = 'signup' }: { idPrefix?: string 
           disabled={isPending}
           className="rounded-full bg-ink px-6 py-3 font-bold text-cream shadow-md hover:bg-ink-soft disabled:opacity-60"
         >
-          {isPending ? 'Signing up…' : 'Get the weekly list'}
+          {isPending ? 'Signing up…' : DIGEST_LIVE ? 'Get the weekly list' : 'Join the list'}
         </button>
 
         {state.status === 'error' && (

@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { formatDate } from '@/lib/format'
 import { escapeHtml } from '@/lib/email'
+import { DIGEST_LIVE } from '@/lib/features'
 
 type DigestEvent = {
   title: string
@@ -65,6 +66,7 @@ function buildDigestHtml(events: DigestEvent[], unsubscribeUrl: string) {
 }
 
 export async function sendWeeklyDigest() {
+  if (!DIGEST_LIVE) return { sent: 0, reason: 'Digest not launched yet' }
   const supabase = createAdminClient()
 
   const now = new Date()

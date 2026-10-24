@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendConfirmationEmail } from '@/lib/email'
+import { DIGEST_LIVE } from '@/lib/features'
 
 export type SubscribeState = { status: 'idle' | 'success' | 'error'; message?: string }
 
@@ -28,7 +29,7 @@ export async function subscribe(
     .eq('email', email)
     .maybeSingle()
 
-  try {
+    try {
     if (!existing) {
       const { data: created, error } = await supabase
         .from('subscribers')
@@ -37,11 +38,11 @@ export async function subscribe(
         .single()
 
       if (error) throw error
-      await sendConfirmationEmail(email, created.confirm_token)
-    } else if (!existing.confirmed) {
+      if (DIGEST_LIVE) await sendConfirmationEmail(email, created.confirm_token)
+    } else if (!existing.confirmed && DIGEST_LIVE) {
       await sendConfirmationEmail(email, existing.confirm_token)
     }
-    // Already confirmed: do nothing, but show the same message below.
+    // Already confirmed, or waitlist mode: nothing else to do.
   } catch (err) {
     console.error('Subscribe failed:', err)
     return { status: 'error', message: 'Something went wrong. Please try again in a moment.' }
@@ -49,7 +50,9 @@ export async function subscribe(
 
   return {
     status: 'success',
-    message: 'Almost there! Check your inbox for a confirmation link.',
+    message: DIGEST_LIVE
+      ? 'Almost there! Check your inbox for a confirmation link.'
+      : 'You’re on the list! We’ll email you when the Monday digest launches.',
   }
 }
 
