@@ -163,7 +163,7 @@ async function EventsContent({ searchParams }: { searchParams: SearchParams }) {
       />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3 lg:items-start">
-        <aside aria-label="Choose dates" className="space-y-4">
+        <aside aria-label="Choose dates" className="min-w-0 space-y-4">
           <QuickPicks sections={sections} />
 
           <details className="rounded-2xl bg-white shadow-sm ring-1 ring-ink/5 lg:hidden">
@@ -176,7 +176,7 @@ async function EventsContent({ searchParams }: { searchParams: SearchParams }) {
           <div className="hidden lg:block">{calendar}</div>
         </aside>
 
-        <div id="events" className="scroll-mt-6 lg:col-span-2">
+        <div id="events" className="min-w-0 scroll-mt-6 lg:col-span-2">
           <EventsPanel
             selection={selection}
             today={today}

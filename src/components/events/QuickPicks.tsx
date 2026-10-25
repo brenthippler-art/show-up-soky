@@ -1,23 +1,23 @@
-import Link from 'next/link'
-import type { Event } from '@/types/event'
-import { formatTime, shortDay } from '@/lib/dates'
+import Link from "next/link";
+import type { Event } from "@/types/event";
+import { formatTime, shortDay } from "@/lib/dates";
 
 export type QuickSection = {
-  id: 'today' | 'tomorrow' | 'week'
-  label: string
-  href: string
-  active: boolean
-  events: Event[]
-}
+  id: "today" | "tomorrow" | "week";
+  label: string;
+  href: string;
+  active: boolean;
+  events: Event[];
+};
 
-const MAX_PILLS = 4
+const MAX_PILLS = 4;
 
 export default function QuickPicks({ sections }: { sections: QuickSection[] }) {
   return (
     <nav aria-label="Quick dates">
-      <ul className="flex flex-wrap gap-2 lg:flex-col lg:gap-4">
+      <ul className="flex flex-wrap gap-2 lg:flex-col lg:flex-nowrap lg:gap-4">
         {sections.map((section) => {
-          const extra = section.events.length - MAX_PILLS
+          const extra = section.events.length - MAX_PILLS;
 
           return (
             <li
@@ -26,11 +26,11 @@ export default function QuickPicks({ sections }: { sections: QuickSection[] }) {
             >
               <Link
                 href={section.href}
-                aria-current={section.active ? 'true' : undefined}
+                aria-current={section.active ? "true" : undefined}
                 className={`inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold ring-2 ring-ink lg:rounded-none lg:p-0 lg:text-xl lg:font-extrabold lg:ring-0 ${
                   section.active
-                    ? 'bg-ink text-cream lg:bg-transparent lg:text-ink lg:underline lg:decoration-sunshine-dark lg:decoration-4 lg:underline-offset-8'
-                    : 'hover:bg-sunshine-light lg:hover:bg-transparent lg:hover:underline lg:hover:decoration-sunshine-dark lg:hover:decoration-4 lg:hover:underline-offset-8'
+                    ? "bg-ink text-cream lg:bg-transparent lg:text-ink lg:underline lg:decoration-sunshine-dark lg:decoration-4 lg:underline-offset-8"
+                    : "hover:bg-sunshine-light lg:hover:bg-transparent lg:hover:underline lg:hover:decoration-sunshine-dark lg:hover:decoration-4 lg:hover:underline-offset-8"
                 }`}
               >
                 {section.label}
@@ -43,12 +43,13 @@ export default function QuickPicks({ sections }: { sections: QuickSection[] }) {
               {section.events.length > 0 ? (
                 <ul className="mt-3 hidden flex-wrap gap-2 lg:flex">
                   {section.events.slice(0, MAX_PILLS).map((event) => (
-                    <li key={event.id} className="max-w-full">
+                    <li key={event.id} className="min-w-0 max-w-full">
                       <Link
                         href={`/events/${event.id}`}
                         className="block max-w-full truncate rounded-full bg-sunshine-light px-3 py-1 text-sm font-bold hover:bg-sunshine"
                       >
-                        {section.id === 'week' && `${shortDay(event.starts_at)} · `}
+                        {section.id === "week" &&
+                          `${shortDay(event.starts_at)} · `}
                         {formatTime(event.starts_at)} · {event.title}
                       </Link>
                     </li>
@@ -65,12 +66,14 @@ export default function QuickPicks({ sections }: { sections: QuickSection[] }) {
                   )}
                 </ul>
               ) : (
-                <p className="mt-2 hidden text-sm text-ink-soft lg:block">Nothing scheduled</p>
+                <p className="mt-2 hidden text-sm text-ink-soft lg:block">
+                  Nothing scheduled
+                </p>
               )}
             </li>
-          )
+          );
         })}
       </ul>
     </nav>
-  )
+  );
 }
