@@ -12,7 +12,7 @@ import {
   type Selection,
 } from "@/components/events/links";
 import { getUpcomingEvents } from "@/lib/events";
-import { addDays, dayKey, isDayKey, isMonthKey, todayKey } from "@/lib/dates";
+import { addDays, addMonths, dayKey, isDayKey, isMonthKey, todayKey } from "@/lib/dates";
 import { isEventType } from "@/lib/event-types";
 import type { Event } from "@/types/event";
 import type { Metadata } from "next";
@@ -110,9 +110,13 @@ async function EventsContent({ searchParams }: { searchParams: SearchParams }) {
       : undefined;
 
   const monthParam = one(params.month);
-  const month = isMonthKey(monthParam)
+  const minMonth = today.slice(0, 7)
+const maxMonth = addMonths(minMonth, 12)
+
+const month =
+  isMonthKey(monthParam) && monthParam >= minMonth && monthParam <= maxMonth
     ? monthParam
-    : (selectedKey ?? today).slice(0, 7);
+    : (selectedKey ?? today).slice(0, 7)
 
   const keepParams: { date?: string; view?: "week" } =
     selection.kind === "week" ? { view: "week" } : { date: explicitDate };

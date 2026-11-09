@@ -27,13 +27,24 @@ export default function MonthCalendar({ month, today, selectedKey, counts, keepP
   const next = addMonths(month, 1)
   const canGoBack = prev >= today.slice(0, 7)
 
+  // NEW: stop the "next month" arrow 12 months out, so the calendar is finite
+  const maxMonth = addMonths(today.slice(0, 7), 12)
+  const canGoForward = next <= maxMonth
+
   const navClass = 'flex h-9 w-9 items-center justify-center rounded-full text-lg font-bold hover:bg-sunshine-light'
 
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-ink/5">
       <div className="flex items-center justify-between">
         {canGoBack ? (
-          <Link href={href({ ...keepParams, month: prev })} className={navClass} scroll={false}>
+          // CHANGED: added prefetch={false} and rel="nofollow"
+          <Link
+            href={href({ ...keepParams, month: prev })}
+            className={navClass}
+            scroll={false}
+            prefetch={false}
+            rel="nofollow"
+          >
             <span aria-hidden="true">←</span>
             <span className="sr-only">Previous month, {monthLabel(prev)}</span>
           </Link>
@@ -43,10 +54,21 @@ export default function MonthCalendar({ month, today, selectedKey, counts, keepP
 
         <p className="font-display text-lg font-extrabold">{monthLabel(month)}</p>
 
-        <Link href={href({ ...keepParams, month: next })} className={navClass} scroll={false}>
-          <span aria-hidden="true">→</span>
-          <span className="sr-only">Next month, {monthLabel(next)}</span>
-        </Link>
+        {/* CHANGED: only render the arrow while next <= maxMonth, plus the same two attributes */}
+        {canGoForward ? (
+          <Link
+            href={href({ ...keepParams, month: next })}
+            className={navClass}
+            scroll={false}
+            prefetch={false}
+            rel="nofollow"
+          >
+            <span aria-hidden="true">→</span>
+            <span className="sr-only">Next month, {monthLabel(next)}</span>
+          </Link>
+        ) : (
+          <span className="h-9 w-9" aria-hidden="true" />
+        )}
       </div>
 
       <table className="mt-3 w-full table-fixed border-collapse text-center" aria-label={`${monthLabel(month)} calendar`}>
@@ -108,10 +130,13 @@ function DayCell({
   }`
 
   return (
+    // CHANGED: prefetch={false} stops ~30 prefetch requests per visit; nofollow keeps crawlers off day URLs
     <Link
       href={href({ date: dayKey })}
       aria-label={label}
       aria-current={selected ? 'date' : undefined}
+      prefetch={false}
+      rel="nofollow"
       className={`relative block rounded-lg py-1.5 text-sm font-bold ${
         selected
           ? 'bg-ink text-cream'
